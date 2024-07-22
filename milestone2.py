@@ -2,16 +2,16 @@ import os
 import cv2
 import pandas as pd
 
-# Paths to Milestone 1 and Template images
-milestone1_folder = "D:/KlA_Unhack/DataSet/Milestone 1"
+# Paths to Milestone 2 and Template images
+milestone2_folder = "D:/KlA_Unhack/DataSet/Milestone 2"
 template_folder = "D:/KlA_Unhack/DataSet/Template images"
-output_folder = "D:/KlA_Unhack/DataSet/Output-Milestone1"
+output_folder = "D:/KlA_Unhack/DataSet/Output-Milestone2"
 
 # Ensure the output directory exists
 os.makedirs(output_folder, exist_ok=True)
 
-# Get the list of image files in Milestone 1 folder
-milestone1_images = [f for f in os.listdir(milestone1_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+# Get the list of image files in Milestone 2 folder
+milestone2_images = [f for f in os.listdir(milestone2_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
 
 # Get the list of template images
 template_images = [f for f in os.listdir(template_folder) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
@@ -30,9 +30,9 @@ for template_file in template_images:
 # Prepare the output data
 output_data = []
 
-# Perform template matching for each image in Milestone 1
-for image_file in milestone1_images:
-    image_path = os.path.join(milestone1_folder, image_file)
+# Perform template matching for each image in Milestone 2
+for image_file in milestone2_images:
+    image_path = os.path.join(milestone2_folder, image_file)
     image_gray = load_image_grayscale(image_path)
     
     detected_speed = None
@@ -50,7 +50,7 @@ for image_file in milestone1_images:
 
 # Create a DataFrame and save to CSV
 df_output = pd.DataFrame(output_data, columns=["Input image name", "Speed limit"])
-output_csv_path = os.path.join(output_folder, 'M1_Output.csv')
+output_csv_path = os.path.join(output_folder, 'M2_Output.csv')
 df_output.to_csv(output_csv_path, index=False)
 
 print(f"Output CSV file saved at: {output_csv_path}")
