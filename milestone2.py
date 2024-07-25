@@ -27,6 +27,14 @@ for template_file in template_images:
     template_path = os.path.join(template_folder, template_file)
     templates[template_name] = load_image_grayscale(template_path)
 
+# Function to rotate an image
+def rotate_image(image, angle):
+    (h, w) = image.shape[:2]
+    center = (w // 2, h // 2)
+    M = cv2.getRotationMatrix2D(center, angle, 1.0)
+    rotated = cv2.warpAffine(image, M, (w, h))
+    return rotated
+
 # Prepare the output data
 output_data = []
 
@@ -39,8 +47,32 @@ for image_file in milestone2_images:
     max_val = 0.5  # A threshold value to determine if the template match is significant
     
     for speed, template in templates.items():
+        # Check the original image
         res = cv2.matchTemplate(image_gray, template, cv2.TM_CCOEFF_NORMED)
-        min_val, curr_max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+        _, curr_max_val, _, _ = cv2.minMaxLoc(res)
+        if curr_max_val > max_val:
+            max_val = curr_max_val
+            detected_speed = speed
+        
+        # Perform matching on rotated and blurred images
+        for angle in range(-15, 16, 5):  # Rotate from -15 to 15 degrees
+            rotated_image = rotate_image(image_gray, angle)
+            
+            # Apply Gaussian Blur
+            blurred_image = cv2.GaussianBlur(rotated_image, (5, 5), 0)
+            
+            # Match template on rotated and blurred image
+            res = cv2.matchTemplate(blurred_image, template, cv2.TM_CCOEFF_NORMED)
+            _, curr_max_val, _, _ = cv2.minMaxLoc(res)
+            
+            if curr_max_val > max_val:
+                max_val = curr_max_val
+                detected_speed = speed
+
+        # Also match on the original blurred image
+        blurred_image = cv2.GaussianBlur(image_gray, (5, 5), 0)
+        res = cv2.matchTemplate(blurred_image, template, cv2.TM_CCOEFF_NORMED)
+        _, curr_max_val, _, _ = cv2.minMaxLoc(res)
         
         if curr_max_val > max_val:
             max_val = curr_max_val
